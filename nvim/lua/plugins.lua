@@ -3,6 +3,7 @@ require('packer').startup(function(use)
 	use 'navarasu/onedark.nvim'
 	use {'nmac427/guess-indent.nvim', config = function() require('guess-indent').setup {} end, }
 	use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+	use 'nvim-treesitter/nvim-treesitter-context'
 	use {'crispgm/nvim-tabline', config = function() require('tabline').setup({}) end, }
 	use 'neovim/nvim-lspconfig'
 end)
@@ -24,6 +25,7 @@ require 'nvim-treesitter.configs'.setup {
 	},
 }
 
+require 'treesitter-context'.setup{}
 
 local lspconfig = require('lspconfig')
 local util = require('lspconfig/util')
@@ -81,19 +83,6 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
 	vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
 end
-
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-	vim.lsp.diagnostic.on_publish_diagnostics, {
-		-- disable virtual text
-		virtual_text = true,
-		-- show signs
-		signs = true,
-		-- delay update diagnostics
-		update_in_insert = false,
-		-- display_diagnostic_autocmds = { "InsertLeave" },
-	}
-)
-
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches

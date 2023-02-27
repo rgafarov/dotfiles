@@ -22,8 +22,6 @@ vim.opt.hlsearch = true
 vim.opt.fileencodings = { "utf-8", "cp1251", "koi8" }
 vim.opt.encoding = "utf-8"
 
--- 
--- set statusline=%F%m%r%h%w\ [%04l,%04v][%p%%] " формат строки состояния
--- "hi statusline gui=reverse cterm=reverse " делать ее черной, а не белой
--- set laststatus=2 " всегда показывать строку состояния
+--
+vim.diagnostic.config({signs=false})
 
