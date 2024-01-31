@@ -28,12 +28,10 @@ require 'nvim-treesitter.configs'.setup {
 require 'treesitter-context'.setup{}
 
 local lspconfig = require('lspconfig')
-local util = require('lspconfig/util')
 
+lspconfig.lua_ls.setup{}
 
 lspconfig.clangd.setup{}
-
-lspconfig.perlpls.setup{}
 
 lspconfig.gopls.setup{
 	cmd = { 'gopls' },
@@ -86,7 +84,7 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
-local servers = { 'clangd' , 'perlpls', 'gopls' }
+local servers = { 'lua_ls', 'clangd' , 'gopls' }
 for _, lsp in pairs(servers) do
 	require('lspconfig')[lsp].setup {
 		on_attach = on_attach,
