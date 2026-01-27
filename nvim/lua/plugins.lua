@@ -147,50 +147,48 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end,
 })
 
--- mason setup
+-- mason setup, configured lsp have to be installed later manually or using headless mode
 require('mason').setup()
 require('mason-lspconfig').setup {
-	ensure_installed = { 'gopls', 'lua_ls', 'clangd', 'pylsp', 'ts_ls' },
-	automatic_installation = true,
+	ensure_installed = { },
+	-- ensure_installed = { 'gopls', 'lua_ls', 'clangd', 'pylsp', 'ts_ls' },
+	automatic_installation = false,
 }
 
 -- LSP servers config
 local servers = {
-	gopls = {
-		cmd = { 'gopls' },
-		settings = { gopls = { analyses = { unusedparams = true, shadow = true }, staticcheck = true } },
-	},
-	lua_ls = {
-		settings = {
-			Lua = {
-				runtime = { version = 'LuaJIT' },
-				diagnostics = { globals = { 'vim' } },
-				workspace = { checkThirdParty = false },
-				telemetry = { enable = false },
-			},
-		},
-	},
-	clangd = {
-		cmd = { 'clangd', '--background-index', '--clang-tidy' },
-	},
-	pylsp = {
-		settings = {
-			pylsp = {
-				plugins = {
-					pycodestyle = { maxLineLength = 100 },
-					pylint = { enabled = true },
-					mccabe = { enabled = true },
-				},
-			},
-		},
-	},
-	ts_ls = {
-		cmd = { 'typescript-language-server', '--stdio' },
-	},
+	gopls = { cmd = { 'gopls' }, settings = { gopls = { analyses = { unusedparams = true, shadow = true }, staticcheck = true } }, },
+	lua_ls = { settings = { Lua = { runtime = { version = 'LuaJIT' }, diagnostics = { globals = { 'vim' } }, workspace = { checkThirdParty = false }, telemetry = { enable = false }, }, }, },
+	clangd = { cmd = { 'clangd', '--background-index', '--clang-tidy' }, },
+	pylsp = { settings = { pylsp = { plugins = { pycodestyle = { maxLineLength = 100 }, pylint = { enabled = true }, mccabe = { enabled = true }, }, }, }, },
+	ts_ls = { cmd = { 'typescript-language-server', '--stdio' }, },
 }
 
 for name, config in pairs(servers) do
 	vim.lsp.config(name, config)
-	vim.lsp.enable(name)
 end
 
+local lsp_by_filetype = {
+	lua = { "lua_ls" },
+	go = { "gopls" },
+	c = { "clangd" },
+	cpp = { "clangd" },
+	python = { "pylsp" },
+	javascript = { "ts_ls" },
+	typescript = { "ts_ls" },
+}
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("AutoLspByFiletype", { clear = true }),
+	callback = function(args)
+		local ft = vim.bo[args.buf].filetype
+		local lspservers = lsp_by_filetype[ft]
+		if not lspservers then
+			return
+		end
+
+		for _, name in ipairs(lspservers) do
+			vim.lsp.enable(name, { bufnr = args.buf })
+		end
+	end,
+})
