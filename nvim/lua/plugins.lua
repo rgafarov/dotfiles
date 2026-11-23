@@ -33,6 +33,16 @@ require("lazy").setup({
 
 		-- utilities
 		{
+			"keaising/im-select.nvim",
+			cond = vim.fn.has("mac") == 1,
+			main = "im_select",
+			opts = {
+				default_command = "macism",
+				default_im_select = "com.apple.keylayout.ABC",
+				set_default_events = { "VimEnter", "InsertLeave", "CmdlineLeave" },
+			},
+		},
+		{
 			"nmac427/guess-indent.nvim",
 			config = function()
 				require("guess-indent").setup {}
@@ -42,7 +52,7 @@ require("lazy").setup({
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
 			opts = {
-				ensure_installed = { "c", "lua", "vim", "vimdoc" },
+				ensure_installed = { "c", "lua", "vim", "vimdoc", "markdown" },
 				sync_install = false,
 				auto_install = true,
 				highlight = { enable = true },
